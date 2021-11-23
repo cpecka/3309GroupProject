@@ -4,14 +4,14 @@ USE hospitalAdmin;
 
 CREATE TABLE Doctor (
 	 doctorID int NOT NULL, 
-	 dFirstName varchar(20) NOT NULL, 
-	 dLastName varchar(20) NOT NULL, 
+	 dFirstName varchar(10) NOT NULL, 
+	 dLastName varchar(10) NOT NULL, 
 	 specialty varchar(10), 
 	 PRIMARY KEY (doctorID));
     
  CREATE TABLE Room (
 	 roomNo int NOT NULL, 
-     hospitalWing varchar(20) NOT NULL,
+     hospitalWing varchar(2) NOT NULL,
      roomCost double NOT NULL,
      PRIMARY KEY (roomNo));
     
@@ -71,7 +71,7 @@ CREATE TABLE EquipmentSchedule (
 CREATE TABLE StaffSchedule (
 	sDate date NOT NULL,
     doctorID int NOT NULL,
-    shiftStart time NOT NULL,
+    shiftStart int NOT NULL,
     availability1 bool,
 	availability2 bool,
 	availability3 bool,
