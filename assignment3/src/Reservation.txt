@@ -1,0 +1,5 @@
+INSERT INTO Reservation VALUES ('2021-12-03', '02:00:00', 91, 10, 'very low', 147);
+INSERT INTO Reservation VALUES ('2021-12-03', '20:00:00', 34, 1, 'emergency', 631);
+INSERT INTO Reservation VALUES ('2021-12-02', '08:00:00', 63, 69, 'critical', 998);
+INSERT INTO Reservation VALUES ('2021-12-02', '06:00:00', 76, 61, 'very low', 159);
+INSERT INTO Reservation VALUES ('2021-12-03', '06:00:00', 52, 16, 'important', 627);
