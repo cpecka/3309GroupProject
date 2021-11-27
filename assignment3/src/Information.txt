@@ -1,0 +1,14 @@
+As stated in the comments, when inserting into the db, you only have to copy and paste the contents of each of the eight text files into a mysql editor.
+Obviously, the db must be created first
+The data in the current txt files is what we used to complete the other exercises
+The information must be loaded in the following order:
+1. Doctor
+2. Medical Equipment
+3. Room
+4. Patient
+5. Room Schedule
+6. Equipment Schedule
+7. Staff Schedule
+8. Reservations *
+
+*This is special. Read the comments below the snippet of code for generating reservations for more info. You will have to manually add times to the reservation txt file
