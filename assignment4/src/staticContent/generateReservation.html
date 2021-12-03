@@ -7,6 +7,45 @@
     <title>Document</title>
 </head>
 <body>
-    <h1>Generate a Reservation</h1>
+    <h1>Calculate the Cost of a Reservation</h1>
+    <form action="javascript: computeResponse()">
+        Date: <input type = "date" id = "day" name = "resDate" required>
+        Time: <input type = "number" id = "time" name = "resTime" required>
+        Doctor ID: <input type = "text" id = "doctor" name = "doctorID" required>
+        Hospital Wing: <input type = "text" id = "wing" name = "wingNumber" required>
+        Equipment Type: <input type = "text" id = "equip" name = "equiType" required>
+        Priority: <input type = "text" id = "priority" name = "pLevel" required>
+        <input type = "Submit" value = "Generate">
+    </form>
+    <div id = "response"></div><br>
+    <a href = "/">Click here to return to the main page</a>
 </body>
+<script>
+    function computeResponse()
+    {
+        let xReq = new XMLHttpRequest();
+        xReq.onreadystatechange = displayResponse; //what will be called when the server responds
+
+        xReq.open('POST','/genReservation',true);   //what will deal with the request
+        xReq.setRequestHeader("day", "" + document.getElementById("day").value);
+        xReq.setRequestHeader("time", "" + document.getElementById("time").value);
+        xReq.setRequestHeader("doctorID", "" + document.getElementById("doctor").value);
+        xReq.setRequestHeader("wing", "" + document.getElementById("wing").value);
+        xReq.setRequestHeader("equiType", "" + document.getElementById("equip").value);
+        xReq.setRequestHeader("priority", "" + document.getElementById("priority").value);
+        xReq.send();    //sending the request
+    }
+
+    function displayResponse()
+    {
+        /*
+        if (this.readyState == 4 && this.status == 200) {
+            let content = "";
+            content += this.responseText;
+            response.innerHTML = content;
+        }
+        */
+    }
+
+</script>
 </html>

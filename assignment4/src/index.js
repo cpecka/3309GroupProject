@@ -11,7 +11,7 @@ function newConnection() {
 const db = mysql.createConnection ({
     host: 'localhost', 
     user: 'root',  
-    password: 'root', 
+    password: 'BATson42', 
     database: 'hospitalAdmin'
 });
 return db;
@@ -23,6 +23,44 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/GenerateReservation', (req,res) => {
     res.sendFile('staticContent/generateReservation.html', {root: __dirname })
+})
+
+app.post('/genReservation', (req, res) => {
+    let conn = newConnection();
+    conn.connect();
+    let resTime=" ";
+    let resDateTime ="";
+    if(req.get("time")<10){
+        resTime+="0";
+    }
+    resTime+=req.get("time");
+
+    console.log(req.get("day"));
+
+    resDateTime= req.get("day") +resTime+ ":00:00";
+
+    conn.query(`SELECT availability From StaffSchedule \n`+
+                `Where (doctorID = ${req.get("doctorID")} AND sTime = '${resDateTime}')`
+        ,(err,rows,fields) => {
+            if(err) {
+                console.log(err);
+            }
+            else {
+                console.log(rows[0]);
+                if(rows[0]=="RowDataPacket { availability: 1 }"){
+                    res.send("Sorry, but doctor "+req.get("doctorID")+" is unavailable at your chosen time.");
+                }
+                /*for (let r of rows) {
+                    cost += r.total;
+                }
+                if (cost>0)
+                    res.send("Your computed cost for any reservation concerning that room and piece of equipment is $" + cost.toFixed(2));
+                else
+                    res.send("Sorry, but one or more of your inputs were illegal at this time");
+                    */
+            }
+        });
+    conn.end();
 })
 
 app.get('/MoveReservation', (req,res) => {
