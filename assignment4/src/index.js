@@ -103,6 +103,49 @@ app.get('/InsertPatient', (req,res) => {
     res.sendFile('staticContent/insertPatient.html', {root: __dirname })
 })
 
+app.post('/insertPatient', (req, res) => {
+    let conn = newConnection();
+    conn.connect();
+    let content = '';
+    conn.query(`INSERT INTO Patient VALUES (
+        ${req.get("healthCardNo")}, '${req.get("pFirstName")}', '${req.get("pLastName")}', ${req.get("dob")}, '${req.get("sex")}', 11)`
+        , (err, rows, fields) => {
+        if(err) {
+            console.log(err);
+        }
+        else {
+            let conn = newConnection();
+            conn.connect();
+            conn.query(`SELECT * \n` +
+             `FROM Patient \n` +
+             `WHERE pFirstName = '${req.get("pFirstName")}' AND pLastName = '${req.get("pLastName")}'`
+             , (err, rows, fields) => {
+                if(err) {
+                    console.log(err);
+                }
+                else {
+                    let dateOfBirth = req.get("dob");
+                    let year = dateOfBirth.substring(0,4);
+                    let month = dateOfBirth.substring(4,6);
+                    let day = dateOfBirth.substring(6,8);
+
+                    content += '<div>';
+                    content += '<br>Patient was added, review patient details below'
+                    content += '<br><br>'
+                    content += 'Name: ' + req.get("pFirstName") + ' ' + req.get("pLastName") + '<br>'
+                    content += 'Health Card Number: ' + req.get("healthCardNo") + '<br>'
+                    content += 'Date of Birth (YYYY/MM/DD): ' + year + '/' + month + '/' + day + '<br>'
+                    content += 'Sex: ' + req.get("sex")
+                    content += '</div>';
+
+                    res.send(content);
+                }
+             });
+        }
+    });
+    conn.end();
+})
+
 app.use(express.static('staticContent'));
 
 app.listen(port, () => {
