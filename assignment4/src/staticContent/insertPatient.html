@@ -8,5 +8,51 @@
 </head>
 <body>
     <h1>Insert a Patient</h1>
+
+    <form action="javascript: getPatient()">
+        <label for="fname">First Name:</label>
+        <input type="text" id="fName" name="firstName"><br><br>
+
+        <label for="lname">Last Name:</label>
+        <input type="text" id="lName" name="lastName"><br><br>
+
+        <label for="hCardNo">Healthcard Number:</label>
+        <input type="text" id="hCardNo" name="healthCard"><br><br>
+
+        <label for="hCardNo">DOB:</label>
+        <input type="text" id="dob" name="dob"><br><br>
+
+        <label for="hCardNo">Sex:</label>
+        <input type="text" id="sex" name="sex"><br><br>
+
+        <input type="submit" value="Submit">
+      </form>
+
+      <div id = "response"></div><br>
+      <a href = "/">Click here to return to the main page</a>
 </body>
+<script>
+    function getPatient()
+    {
+        let xReq = new XMLHttpRequest();
+        xReq.onreadystatechange = displayPatient; //what will be called when the server responds
+
+        xReq.open('POST','/insertPatient',true);   //what will deal with the request
+        xReq.setRequestHeader("pFirstName", "" + document.getElementById("fName").value);
+        xReq.setRequestHeader("pLastName", "" + document.getElementById("lName").value);
+        xReq.setRequestHeader("healthCardNo", "" + document.getElementById("hCardNo").value);
+        xReq.setRequestHeader("DOB", "" + document.getElementById("dob").value);
+        xReq.setRequestHeader("sex", "" + document.getElementById("sex").value);
+        xReq.send();    //sending the request
+    }
+
+    function displayPatient()
+    {
+        if (this.readyState == 4 && this.status == 200) {
+            let content = "";
+            content += this.responseText;
+            response.innerHTML = content;
+        }
+    }
+</script>
 </html>
