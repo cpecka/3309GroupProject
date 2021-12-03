@@ -8,5 +8,34 @@
 </head>
 <body>
     <h1>Calculate the Cost of a Reservation</h1>
+    <form action="javascript: computeResponse()">
+        Room Number: <input type = "number" id = "room" name = "roomNumber" required>
+        Equipment ID: <input type = "number" id = "equipment" name = "equipmentIdentification" required>
+        <input type = "Submit" value = "Calculate">
+    </form>
+    <div id = "response"></div><br>
+    <a href = "/">Click here to return to the main page</a>
 </body>
+<script>
+    function computeResponse()
+    {
+        let xReq = new XMLHttpRequest();
+        xReq.onreadystatechange = displayResponse; //what will be called when the server responds
+
+        xReq.open('POST','/calculateCost',true);   //what will deal with the request
+        xReq.setRequestHeader("roomNo", "" + document.getElementById("room").value);
+        xReq.setRequestHeader("equipmentID", "" + document.getElementById("equipment").value);
+        xReq.send();    //sending the request
+    }
+
+    function displayResponse()
+    {
+        if (this.readyState == 4 && this.status == 200) {
+            let content = "";
+            content += this.responseText;
+            response.innerHTML = content;
+        }
+    }
+
+</script>
 </html>
