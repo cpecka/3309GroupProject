@@ -97,7 +97,7 @@ app.post('/insertPatient', (req, res) => {
                     content += 'First Name: ' + req.get("pFirstName") + '<br>'
                     content += 'Last Name: ' + req.get("pLastName") + '<br>'
                     content += 'Health Card Number: ' + req.get("healthCardNo") + '<br>'
-                    content += 'Date of Birth: ' + year + '/' + month + '/' + day + '<br>'
+                    content += 'Date of Birth (YYYY/MM/DD): ' + year + '/' + month + '/' + day + '<br>'
                     content += 'Sex: ' + req.get("sex")
                     content += '</div>';
 
