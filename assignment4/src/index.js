@@ -61,6 +61,25 @@ app.post('/calculateCost', (req, res) => {
     conn.end();
 })
 
+app.get('/DisplayReservations', (req,res) => {
+    let conn = newConnection();
+    conn.connect();
+    let content = '';
+    conn.query(`SELECT d.dFirstName, d.dLastName, d.specialty, r.* \n` +
+                `FROM Doctor d \n` +
+                `JOIN Reservation r ON d.doctorID = r.doctorID \n` +
+                `WHERE Date(${req.get("sTime")}) = '2021-12-13'`            
+        ,(err,rows,fields) => {
+            if(err) {
+                console.log(err);
+            } else {
+                content = '<div>'
+                content = '</div>'
+            }
+        }
+    )
+})
+
 app.get('/InsertPatient', (req,res) => {
     res.sendFile('staticContent/insertPatient.html', {root: __dirname })
 })
