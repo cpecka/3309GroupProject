@@ -146,6 +146,97 @@ app.get('/SearchSchedules', (req,res) => {
     res.sendFile('staticContent/searchSchedules.html', {root: __dirname })
 })
 
+app.post('/SearchSResults', (req, res) => {
+    let schedule = `<h2> ${req.body.scheduleType} for ID (or No) ${req.body.sId} on ${req.body.sDate} </h2><br/>`
+    schedule += `<style>
+    table, th, td {
+        border: 1px solid black;
+      } </style>`
+    let conn = newConnection();
+    conn.connect();
+
+    let date = String(req.body.sDate)
+    date = date.substring(0,date.indexOf('-')) + date.substring(date.indexOf('-') + 1, date.indexOf('-' ,date.indexOf('-') + 1)) + date.substring(date.indexOf('-' ,date.indexOf('-') + 1) + 1);
+
+    if(req.body.scheduleType == 'Room Schedule'){
+        conn.query(`SELECT * FROM roomschedule 
+                    WHERE Date(sTime) = ${date} 
+                    AND roomNo = ${req.body.sId} 
+                    ORDER BY availability;`
+            ,(err,rows,fields) =>{
+
+                schedule += `<table style="width:100%">`
+                schedule += `<tr><th>RoomNo</th><th>Operating Times</th><th>Availability</th></tr>`
+                for(r of rows){
+                    let time = String(r.sTime);
+                    time= time.substring(time.indexOf(':') - 2, time.indexOf('G'));
+                    schedule += `<tr><td> ${r.roomNo} </td>`
+                    schedule += `<td> ${time} </td>`
+                    schedule += `<td> ${r.availability} </td></tr>`
+                }
+                schedule += `</table>`
+                schedule += `<form action="/">
+                                <br/><button>Return to Home Page</button>
+                             </form>`
+                res.send(schedule);
+        })
+    }
+    else if(req.body.scheduleType == 'Doctor Schedule'){
+        conn.query(`SELECT * FROM 
+                (SELECT * FROM Doctor NATURAL JOIN staffschedule) AS doctorSchedule
+                WHERE Date(sTime) = ${date} 
+                AND doctorID = ${req.body.sId} 
+                ORDER BY availability;`
+            ,(err,rows,fields) =>{
+
+                schedule += `<table style="width:100%">`
+                schedule += `<tr><th>DoctorID</th><th>First Name</th><th>Last Name</th><th>Specialty</th><th>Operating Times</th><th>Shift</th><th>Availability</th></tr>`
+                for(r of rows){
+                    let time = String(r.sTime);
+                    time= time.substring(time.indexOf(':') - 2, time.indexOf('G'));
+                    schedule += `<tr><td> ${r.doctorID} </td>`
+                    schedule += `<td> ${r.dFirstName} </td>`
+                    schedule += `<td> ${r.dLastName} </td>`
+                    schedule += `<td> ${r.specialty} </td>`
+                    schedule += `<td> ${time} </td>`
+                    schedule += `<td> ${r.shift} </td>`
+                    schedule += `<td> ${r.availability} </td></tr>`
+                }
+                schedule += `</table>`
+                schedule += `<form action="/">
+                                <br/><button>Return to Home Page</button>
+                             </form>`
+                res.send(schedule);
+        })
+    }
+    else{
+        conn.query(`SELECT * FROM
+                    (SELECT equipmentID, equipmentType, sTime, availability FROM medicalequipment NATURAL JOIN equipmentschedule) AS eSchedule
+                    WHERE Date(sTime) = ${date} 
+                    AND equipmentID = ${req.body.sId}
+                    ORDER BY availability;`
+            ,(err,rows,fields) =>{
+
+                schedule += `<table style="width:100%">`
+                schedule += `<tr><th>EquipmentID</th><th>Equipment Type</th><th>Operating Times</th><th>Availability</th></tr>`
+                for(r of rows){
+                    let time = String(r.sTime);
+                    time= time.substring(time.indexOf(':') - 2, time.indexOf('G'));
+                    schedule += `<tr><td> ${r.equipmentID} </td>`
+                    schedule += `<td> ${r.equipmentType} </td>`
+                    schedule += `<td> ${time} </td>`
+                    schedule += `<td> ${r.availability} </td></tr>`
+                }
+                schedule += `</table>`
+                schedule += `<form action="/">
+                                <br/><button>Return to Home Page</button>
+                             </form>`
+                res.send(schedule);
+        })
+    }
+    conn.end();
+})
+
 app.get('/CalcReservationCost', (req,res) => {
     res.sendFile('staticContent/calcReservationCost.html', {root: __dirname })
 })
