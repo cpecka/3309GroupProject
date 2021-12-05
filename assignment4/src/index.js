@@ -70,9 +70,8 @@ app.post('/displayReservations', (req,res) => {
     let content = '';
 
     let date = req.get('resDate');
-    console.log(req.get.reservationDate);
     date = date.substring(0,date.indexOf('-')) + date.substring(date.indexOf('-') + 1, date.indexOf('-' ,date.indexOf('-') + 1)) + date.substring(date.indexOf('-' ,date.indexOf('-') + 1) + 1);
-    console.log(date);
+
     conn.query(`SELECT d.dFirstName, d.dLastName, d.specialty, r.* 
         FROM Doctor d
         JOIN Reservation r ON d.doctorID = r.doctorID
@@ -84,6 +83,10 @@ app.post('/displayReservations', (req,res) => {
                 console.log(err);
             } else {
                 console.log(rows);
+                content += `<style>
+                            table, th, td {
+                                border: 1px solid black;
+                            } </style>`
                 content += `<table style = "width:100%">`
                 content += `<tr><th>DoctorID</th><th>First Name</th><th>Last Name</th><th>Specialty</th><th>Appointment Time</th><th>Room No.</th><th>Priority</th><th>Equipment No.</th></tr>`
                 for (r of rows) {
