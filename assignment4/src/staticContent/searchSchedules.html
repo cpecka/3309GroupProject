@@ -8,5 +8,26 @@
 </head>
 <body>
     <h1>Search Schedules</h1>
+
+    <form action="/SearchSResults" method="post">
+        <label for="scheduleType">Schedule Type</label>
+        <select name="scheduleType" id="scheduleType">
+            <option value="Doctor Schedule">Doctor Schedule</option>
+            <option value="Room Schedule">Room Schedule</option>
+            <option value="Equipment Schedule">Equipment Schedule</option>
+        </select><br><br>
+
+        <label for="sId">ID (or No):</label>
+        <input type="text" id="sId" name="sId"><br><br>
+
+        <label for="sDate">Avaliability Date: </label>
+        <input type="date" id="sDate" name="sDate"><br><br>
+
+        <input type="submit" value="Generate">
+      </form>
+
+      <form action="/">
+          <br/><button>Return to Home Page</button>
+      </form>
 </body>
 </html>
