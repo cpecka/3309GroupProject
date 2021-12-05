@@ -138,10 +138,6 @@ app.post('/genReservation2', (req, res) => {
     conn.end();
 })
 
-app.get('/MoveReservation', (req, res) => {
-    res.sendFile('staticContent/moveReservation.html', { root: __dirname })
-})
-
 app.get('/SearchSchedules', (req,res) => {
     res.sendFile('staticContent/searchSchedules.html', {root: __dirname })
 })
@@ -236,6 +232,50 @@ app.post('/SearchSResults', (req, res) => {
     }
     conn.end();
 })
+app.get('/MoveReservation', (req, res) => {
+    res.sendFile('staticContent/moveReservation.html', { root: __dirname })
+})
+app.post('/viewPatients', (req, res) => {
+    let conn = newConnection();
+    conn.connect();
+    let list = `<h2> List of Patient Information for Doctor ID #${req.body.doctorID}</h2><br/>`
+    list += `<style>
+    table, th, td {
+        border: 1px solid black;
+      } </style>`;
+    conn.query(`CREATE OR REPLACE VIEW doctorPatients AS \n` + 
+                `SELECT p.pFirstName, p.pLastName, p.healthCardNo, p.sex, p.DOB \n` + 
+                `FROM patient p \n` + 
+                `WHERE p.doctorID = ${req.body.doctorID}`
+            ,(err,rows,fields) => {
+                if(err) {
+                    console.log(err);
+                }
+            })
+    conn.query(`SELECT * FROM doctorPatients`
+        ,(err,rows,fields) =>{
+            if (err){
+                console.log(err);
+            }
+            else {
+                list += `<table style="width:100%">`
+                list += `<tr><th>First Name</th><th>Last Name</th><th>Health Card Number</th><th>Sex</th><th>Date Of Birth</th></tr>`
+                for(r of rows){
+                    list += `<tr><td> ${r.pFirstName} </td>`
+                    list += `<td> ${r.pLastName} </td>`
+                    list += `<td> ${r.healthCardNo} </td>`
+                    list += `<td> ${r.sex} </td>`
+                    list += `<td> ${r.DOB} </td></tr>`
+                }
+                list += `</table>`
+                list += `<form action="/">
+                                <br/><button>Return to Home Page</button>
+                            </form>`
+                res.send(list);
+            }
+    })
+    conn.end();
+});
 
 app.get('/CalcReservationCost', (req,res) => {
     res.sendFile('staticContent/calcReservationCost.html', {root: __dirname })
