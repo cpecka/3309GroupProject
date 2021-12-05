@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Display Reservation</title>
+</head>
+<body>
+    <h1>Reservations</h1>
+    <form action = "javascript: getRes()">
+        <label for="date">Select Date:</label>
+        <input type="date" id="date" name="reservationDate"><br/>
+        <input type = "submit" ><br/>
+        <div id=response></div>
+
+        <a href = "/">Click here to return to the main page</a>
+    </form>
+</body>
+<script>
+    function getRes() {
+        let xReq = new XMLHttpRequest();
+        xReq.onreadystatechange = showRes;
+
+        xReq.open('POST', '/displayReservations', true);
+
+        xReq.setRequestHeader("resDate","" + document.getElementById("date").value)
+        console.log("resDate","" + document.getElementById("date").value)
+        console.log('test2');
+        xReq.send();
+    }
+
+    function showRes() {
+        if (this.readyState == 4 && this.status == 200) {
+            let content = "";
+            content += this.responseText;
+            response.innerHTML = content;
+        }
+    }
+</script>
+</html>

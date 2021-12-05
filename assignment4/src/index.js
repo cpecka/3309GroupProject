@@ -8,7 +8,7 @@ let resDateTime ="";
 
 const app = express();
 
-const port = 4000;
+const port = 5500;
 
 function newConnection() {
 const db = mysql.createConnection ({
@@ -262,6 +262,53 @@ app.post('/calculateCost', (req, res) => {
                     res.send("Sorry, but one or more of your inputs were illegal at this time");
             }
         });
+    conn.end();
+})
+app.get('/DisplayReservation', (req,res) => {
+    res.sendFile('staticContent/displayReservations.html', {root: __dirname })
+})
+
+app.post('/displayReservations', (req,res) => {
+    let conn = newConnection();
+    conn.connect();
+    let content = '';
+
+    let date = req.get('resDate');
+    console.log(req.get.reservationDate);
+    date = date.substring(0,date.indexOf('-')) + date.substring(date.indexOf('-') + 1, date.indexOf('-' ,date.indexOf('-') + 1)) + date.substring(date.indexOf('-' ,date.indexOf('-') + 1) + 1);
+    console.log(date);
+    conn.query(`SELECT d.dFirstName, d.dLastName, d.specialty, r.* 
+        FROM Doctor d
+        JOIN Reservation r ON d.doctorID = r.doctorID
+        WHERE Date(sTime ) = '${date}' 
+        ` 
+        //${req.body.reservationDate  }     
+        ,(err,rows,fields) => {
+            if(err) {
+                console.log(err);
+            } else {
+                console.log(rows);
+                content += `<table style = "width:100%">`
+                content += `<tr><th>DoctorID</th><th>First Name</th><th>Last Name</th><th>Specialty</th><th>Appointment Time</th><th>Room No.</th><th>Priority</th><th>Equipment No.</th></tr>`
+                for (r of rows) {
+                    content += `<div>`
+                    content += `<tr>`
+                    content += `<td> ${r.doctorID}</td>`
+                    content += `<td> ${r.dFirstName}</td>`
+                    content += `<td> ${r.dLastName}</td>`
+                    content += `<td> ${r.specialty}</td>`
+                    content += `<td> ${r.sTime}</td>`
+                    content += `<td> ${r.roomNo}</td>`
+                    content += `<td> ${r.priority}</td>`
+                    content += `<td> ${r.equipmentID}</td>`
+                    content += `<tr>`
+                    content += `</div>`
+                }
+                content += `</table>`
+            }
+            res.send(content)
+        }
+    )
     conn.end();
 })
 
