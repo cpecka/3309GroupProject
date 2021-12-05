@@ -11,6 +11,7 @@
   "dependencies": {
     "express": "^4.17.1",
     "mysql": "^2.18.1",
-    "path": "^0.12.7"
+    "sync-mysql": "^3.0.1",
+    "sync-sql": "^1.0.2"
   }
 }
