@@ -3,9 +3,10 @@ const bodyParser = require('body-parser');  //Requiring body-parser
 const mysql = require('mysql'); //Requiring MYSQL
 const path = require('path');   //Requiring path
 
+//these values need to be stored in between connetions to the DB
 let rRoomNo;    //holds a room number (for generating reservations)
 let rEID;   //holds an equipment ID (for generating reservations)
-let resDateTime ="";    //holds the datetime of a reservation
+let resDateTime ="";    //holds the datetime of a reservation (for generating reservations)
 
 const app = express();  //allow us to use express by referencing it in an app variable
 
@@ -31,41 +32,46 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.get('/GenerateReservation', (req,res) => {
     res.sendFile('staticContent/generateReservation.html', {root: __dirname })
 })
-
+//This is the first step in the generate reservations functionality
+//this stage verifies the values that the user would like to use for their new reservation
+//and informs them of any errors in their input
 app.post('/genReservation1', (req, res) => {
+    //establishing connection
     let conn = newConnection();
     conn.connect();
-    const setRoomNo = (no) =>{
+    const setRoomNo = (no) =>{ //Sets a room number for step 2 of the generate reservation functionality
         rRoomNo=no;
     }
-    const setEquipmentID = (id) =>{
+    const setEquipmentID = (id) =>{//Sets an equipment ID for step 2 of the generate reservation functionality
         rEID=id;
     }
-    let resTime=" ";
+    let resTime=" "; 
+    //appends a 0 to the time int in the case that it is less than 10
     if(req.get("time")<10){
         resTime+="0";
     }
     resTime+=req.get("time");
 
-    resDateTime= req.get("day") +resTime+ ":00:00";
+    resDateTime= req.get("day") +resTime+ ":00:00"; // formats the date and time values for a DateTime value
 
     conn.query(`SELECT availability From StaffSchedule \n`+
-                `Where (doctorID = ${req.get("doctorID")} AND sTime = '${resDateTime}')`
+                `Where (doctorID = ${req.get("doctorID")} AND sTime = '${resDateTime}')`//Checks if the doctor is available for the time requested by the user
         ,(err,rows,fields) => {
             if(err) {
                 console.log(err);
             }
             else {
-                if(rows==null){
+                if(rows==null){//if the return is empty informs the user the doctor is unavailable
                     res.send("Sorry! doctor "+req.get("doctorID")+" is unavailable at your chosen time.");
                     return;
                 }
-                if(rows[0].availability=='0'){
+                if(rows[0].availability=='0'){//if the return is false informs the user the doctor is unavailable
                     res.send("Sorry! doctor "+req.get("doctorID")+" is unavailable at your chosen time.");
                     return;
                 }
             }
         });
+        //returns a table of rooms in the wing chosen by the user that are available during the time the user selected 
     conn.query(`SELECT rs.roomNo From RoomSchedule rs \n`+
                 `Where (SELECT r.roomNo FROM ROOM r \n`+
                 `Where (rs.sTime = '${resDateTime}' AND rs.availability = true AND r.hospitalWing = '${req.get("wing")}' AND r.roomNo = rs.roomNo))`
@@ -74,13 +80,14 @@ app.post('/genReservation1', (req, res) => {
                 console.log(err);
             }
             else {
-                if (rows.length == 0) {
+                if (rows.length == 0) {//if there are no rooms availabel during the selected time
                     res.send("Sorry! every room in wing " + req.get("wing") + " is unavailable at your chosen time.");
                     return;
                 }
-                setRoomNo(rows[0].roomNo);
+                setRoomNo(rows[0].roomNo); //sets room number for the second stage of generate reservation
             }
         });
+        //returns a table of IDs for the equipment chosen by the user that are available during the time the user selected
     conn.query(`SELECT es.equipmentID from EquipmentSchedule es \n` +
         `Where (Select me.equipmentID from MedicalEquipment me \n` +
         `Where (es.sTime = '${resDateTime}' AND es.availability = true AND me.equipmentType = '${req.get("equiType")}' AND me.equipmentID = es.equipmentID))`
@@ -89,26 +96,28 @@ app.post('/genReservation1', (req, res) => {
                 console.log(err);
             }
             else {
-                if (rows.length == 0) {
-                    if (req.get("equiType") == "Forceps") {
+                if (rows.length == 0) {//if there is no equipment of that type or none availble at the chosen time
+                    if (req.get("equiType") == "Forceps") {// removes the s in the return for forceps (since it is plural by default)
                         res.send("Sorry! There are no " + req.get("equiType") + " available at your chosen time.");
                         return;
                     }
                     res.send("Sorry! There are no " + req.get("equiType") + "s available at your chosen time.");
                     return;
                 }
-                setEquipmentID(rows[0].equipmentID);
+                setEquipmentID(rows[0].equipmentID);//sets equipment ID for the second stage of generate reservation
             }
         });
     conn.end();
 })
-
-app.post('/genReservation2', (req, res) => {
+//Stage 2 of generate reservation
+//this stage sets the availabilities of the entities chosen in stage one to false for the time the user selcted
+//and inserts the new reservation into the DB
+app.post('/genReservation2', (req, res) => { 
     let conn = newConnection();
     conn.connect();
     conn.query(`Update StaffSchedule \n` +
         `Set availability = false \n` +
-        `Where(sTime = '${resDateTime}' AND doctorID = ${req.get("doctorID")})`
+        `Where(sTime = '${resDateTime}' AND doctorID = ${req.get("doctorID")})`//sets the doctors availability to false for the time of the reservation
         , (err, rows, fields) => {
             if (err) {
                 console.log(err);
@@ -116,7 +125,7 @@ app.post('/genReservation2', (req, res) => {
         });
     conn.query(`Update RoomSchedule \n` +
         `Set availability = false \n` +
-        `Where(sTime = '${resDateTime}' AND roomNo = ` + rRoomNo + `)`
+        `Where(sTime = '${resDateTime}' AND roomNo = ` + rRoomNo + `)`//sets the rooms availability to false for the time of the reservation
         , (err, rows, fields) => {
             if (err) {
                 console.log(err);
@@ -125,18 +134,19 @@ app.post('/genReservation2', (req, res) => {
 
     conn.query(`Update EquipmentSchedule \n` +
         `Set availability = false \n` +
-        `Where(sTime = '${resDateTime}' AND equipmentID = ` + rEID + `)`
+        `Where(sTime = '${resDateTime}' AND equipmentID = ` + rEID + `)`//sets the equipments availability to false for the time of the reservation
         , (err, rows, fields) => {
             if (err) {
                 console.log(err);
             }
         });
-    conn.query(`INSERT INTO Reservation VALUES ('${resDateTime}',`+ req.get("doctorID") +`, ` + rRoomNo + `, '`+ req.get("priority") +`', ` + rEID + `);`
+    conn.query(`INSERT INTO Reservation VALUES ('${resDateTime}',`+ req.get("doctorID") +`, ` + rRoomNo + `, '`+ req.get("priority") +`', ` + rEID + `);`// inserts the reservation into the system
         , (err, rows, fields) => {
             if (err) {
                 console.log(err);
             }
             else{
+                //informs the user that the reservation was successfully generated
                 res.send("Reservation added "+ resDateTime+" with doctor number "+req.get("doctorID")+ " in room "+ rRoomNo +". \nThe priority level is "+ req.get("priority")+".");
             }
         });
