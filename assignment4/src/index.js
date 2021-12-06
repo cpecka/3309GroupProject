@@ -98,6 +98,7 @@ app.post('/genReservation1', (req, res) => {
         });
     conn.end();
 })
+
 app.post('/genReservation2', (req, res) => {
     let conn = newConnection();
     conn.connect();
@@ -232,9 +233,11 @@ app.post('/SearchSResults', (req, res) => {
     }
     conn.end();
 })
-app.get('/MoveReservation', (req, res) => {
-    res.sendFile('staticContent/moveReservation.html', { root: __dirname })
+
+app.get('/DisplayPatientsByDoctor', (req, res) => {
+    res.sendFile('staticContent/displayPatientsByDoctor.html', { root: __dirname })
 })
+
 app.post('/viewPatients', (req, res) => {
     let conn = newConnection();
     conn.connect();
@@ -285,7 +288,7 @@ app.post('/calculateCost', (req, res) => {
     let conn = newConnection();
     conn.connect();
     let cost = 0;
-    conn.query(`SELECT (equipmentCost + roomCost + 200) AS total \n` +
+    conn.query(`SELECT SUM(equipmentCost + roomCost + 200) AS total \n` +
              `FROM room, medicalEquipment \n` +
              `WHERE roomNo = ${req.get("roomNo")} AND equipmentID = ${req.get("equipmentID")}`
         ,(err,rows,fields) => {
@@ -304,6 +307,7 @@ app.post('/calculateCost', (req, res) => {
         });
     conn.end();
 })
+
 app.get('/DisplayReservation', (req,res) => {
     res.sendFile('staticContent/displayReservations.html', {root: __dirname })
 })
