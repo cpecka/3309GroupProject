@@ -394,11 +394,12 @@ app.post('/insertPatient', (req, res) => {
 
     //Modification to insert into the Patient table with the inputted values
     conn.query(`INSERT INTO Patient VALUES (
-        ${req.get("healthCardNo")}, '${req.get("pFirstName")}', '${req.get("pLastName")}', ${req.get("dob")}, '${req.get("sex")}', 11)`
+        '${req.get("healthCardNo")}', '${req.get("pFirstName")}', '${req.get("pLastName")}', ${req.get("dob")}, '${req.get("sex")}', ${req.get("doctorID")})`
         , (err, rows, fields) => {
 
         if(err) {
             content += '<br>One or more value(s) inputted are invalid or duplicated';
+            console.log(err)
             res.send(content);  //Sends a message saying input was invalid
         }
         else {

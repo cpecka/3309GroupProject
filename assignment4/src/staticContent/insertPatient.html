@@ -11,19 +11,22 @@
 
     <form action="javascript: getPatient()">
         <label for="fname">First Name:</label>
-        <input type="text" id="fName" name="firstName"><br><br>
+        <input type="text" id="fName" name="firstName" maxlength = "20" required><br><br>
 
         <label for="lname">Last Name:</label>
-        <input type="text" id="lName" name="lastName"><br><br>
+        <input type="text" id="lName" name="lastName" maxlength = "20" required><br><br>
 
         <label for="hCardNo">Healthcard Number:</label>
-        <input type="text" id="hCardNo" name="healthCard"><br><br>
+        <input type="text" id="hCardNo" name="healthCard" minlength="15" maxlength = "15" required><br><br>
 
-        <label for="hCardNo">DOB (YYYYMMDD):</label>
-        <input type="text" id="dob" name="dob"><br><br>
+        <label for="dob">DOB (YYYYMMDD):</label>
+        <input type="text" id="dob" name="dob" minlength="7" maxlength = "7" required><br><br>
 
-        <label for="hCardNo">Sex:</label>
-        <input type="text" id="sex" name="sex"><br><br>
+        <label for="sex">Sex:</label>
+        <input type="text" id="sex" name="sex" maxlength = "1" required><br><br>
+
+        <label for="doctorID">Doctor ID:</label>
+        <input type="number" id = "doctorID" name="doctor" required><br><br>
 
         <input type="submit" value="Submit">
       </form>
@@ -44,6 +47,7 @@
         xReq.setRequestHeader("healthCardNo", "" + document.getElementById("hCardNo").value);   //setting the correct request header for the patient's health card number
         xReq.setRequestHeader("DOB", "" + document.getElementById("dob").value);    //setting the correct request header for the patient's date of birth
         xReq.setRequestHeader("sex", "" + document.getElementById("sex").value);    //setting the correct request header for the patient's sex
+        xReq.setRequestHeader("doctorID", "" + document.getElementById("doctorID").value);  //setting the correct request header for the doctor's id
         xReq.send();    //sending the request
     }
 

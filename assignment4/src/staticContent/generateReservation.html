@@ -11,10 +11,10 @@
     <form action="javascript: computeResponse()">
         Date: <input type = "date" id = "day" name = "resDate" required>
         Time: <input type = "number" id = "time" name = "resTime" required>
-        Doctor ID: <input type = "text" id = "doctor" name = "doctorID" required>
-        Hospital Wing: <input type = "text" id = "wing" name = "wingNumber" required>
-        Equipment Type: <input type = "text" id = "equip" name = "equiType" required>
-        Priority: <input type = "text" id = "priority" name = "pLevel" required>
+        Doctor ID: <input type = "number" id = "doctor" name = "doctorID" required>
+        Hospital Wing: <input type = "text" id = "wing" name = "wingNumber" minlength="2" maxlength="2" required>
+        Equipment Type: <input type = "text" id = "equip" name = "equiType" maxlength="20" required>
+        Priority: <input type = "text" id = "priority" name = "pLevel" maxlength="10" required>
         <br>
         <button type="submit" formaction="javascript: checkAve()">Check Availability</button>
         <br>
