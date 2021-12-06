@@ -14,7 +14,7 @@ function newConnection() {
 const db = mysql.createConnection ({
     host: 'localhost', 
     user: 'root',  
-    password: 'BATson42', 
+    password: 'root', 
     database: 'hospitalAdmin'
 });
 return db;
@@ -264,11 +264,14 @@ app.post('/viewPatients', (req, res) => {
                 list += `<table style="width:100%">`
                 list += `<tr><th>First Name</th><th>Last Name</th><th>Health Card Number</th><th>Sex</th><th>Date Of Birth</th></tr>`
                 for(r of rows){
+                    let dob = String(r.DOB);
+                    dob = dob.substring(4,15);
+
                     list += `<tr><td> ${r.pFirstName} </td>`
                     list += `<td> ${r.pLastName} </td>`
                     list += `<td> ${r.healthCardNo} </td>`
                     list += `<td> ${r.sex} </td>`
-                    list += `<td> ${r.DOB} </td></tr>`
+                    list += `<td>` + dob + `</td></tr>`
                 }
                 list += `</table>`
                 list += `<form action="/">
