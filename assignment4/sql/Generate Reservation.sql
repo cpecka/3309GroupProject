@@ -1,11 +1,11 @@
 /*
 Values to input for non trival output in generate reservation functionality
 
-	December 13, 2021 6:00am
-	Doctor 17
-	wing D1
-	Surgical Table
-    very low
+	Reservation Date: December 13, 2021 6:00am
+	Doctor ID: 17
+	Wing: D1
+	Equipment: Surgical Table
+    Priority: very low
 */
 USE hospitalAdmin;
 #finds if relavant doctor is available
