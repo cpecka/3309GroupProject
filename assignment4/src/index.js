@@ -170,13 +170,17 @@ app.post('/SearchSResults', (req, res) => {
             ,(err,rows,fields) =>{
 
                 schedule += `<table style="width:100%">`    //Formatting table
-                schedule += `<tr><th>RoomNo</th><th>Operating Times</th><th>Availability</th></tr>` //Formatting table headers
+                schedule += `<tr><th>Operating Times</th><th>Availability</th></tr>` //Formatting table headers
                 for(r of rows){
                     let time = String(r.sTime); //Formatting time
                     time= time.substring(time.indexOf(':') - 2, time.indexOf('G')); //Formatting time more
-                    schedule += `<tr><td> ${r.roomNo} </td>`    //Inserting room's number in one column
                     schedule += `<td> ${time} </td>`    //Inserting time in one column
-                    schedule += `<td> ${r.availability} </td></tr>` //Inserting room's availability in one column
+                    if (r.availability == 1) {
+                        schedule += `<td>Available</td></tr>` //Inserting room's availability in one column
+                    }
+                    else {
+                        schedule += `<td>Not Available</td></tr>` //Inserting room's availability in one column
+                    }
                 }
                 schedule += `</table>`  //Ending table
                 schedule += `<form action="/">
@@ -196,18 +200,25 @@ app.post('/SearchSResults', (req, res) => {
             ,(err,rows,fields) =>{
 
                 schedule += `<table style="width:100%">`    //Formatting table
-                schedule += `<tr><th>DoctorID</th><th>First Name</th><th>Last Name</th><th>Specialty</th><th>Operating Times</th><th>Shift</th><th>Availability</th></tr>`  //Formatting table headers
-                for(r of rows){
+                schedule += `<tr><th>Operating Times</th><th>Shift</th><th>Availability</th></tr>`  //Formatting table headers
+                let docName = '';
+                for(r of rows){ 
                     let time = String(r.sTime); //Formatting time 
                     time= time.substring(time.indexOf(':') - 2, time.indexOf('G')); //Formatting time more
-                    schedule += `<tr><td> ${r.doctorID} </td>`  //Inserting doctor's ID in one column
-                    schedule += `<td> ${r.dFirstName} </td>`    //Inserting doctor's first name in one column
-                    schedule += `<td> ${r.dLastName} </td>` //Inserting doctor's last name in one column
-                    schedule += `<td> ${r.specialty} </td>` //Inserting doctor's specialty in one column
                     schedule += `<td> ${time} </td>`    //Inserting the time in one column
                     schedule += `<td> ${r.shift} </td>` //Inserting doctor's shift in one column
-                    schedule += `<td> ${r.availability} </td></tr>` //Inserting doctor's availability in one column
+                    if (r.availability == null) {
+                        schedule += `<td>Not at Hospital</td></tr>` //Inserting doctor's availability in one column
+                    }
+                    else if (r.availability == 1) {
+                        schedule += `<td>Available</td></tr>` //Inserting doctor's availability in one column
+                    }
+                    else {
+                        schedule += `<td>Not Available</td></tr>` //Inserting doctor's availability in one column
+                    }
+                    docName = r.dFirstName + ' ' + r.dLastName
                 }
+                schedule += `Doctor's Name: ` + docName
                 schedule += `</table>`  //Ending table
                 schedule += `<form action="/">
                                 <br/><button>Return to Home Page</button>
@@ -226,15 +237,21 @@ app.post('/SearchSResults', (req, res) => {
             ,(err,rows,fields) =>{
 
                 schedule += `<table style="width:100%">`    //Formatting table
-                schedule += `<tr><th>EquipmentID</th><th>Equipment Type</th><th>Operating Times</th><th>Availability</th></tr>` //Formatting table headers
+                schedule += `<tr><th>Operating Times</th><th>Availability</th></tr>` //Formatting table headers
+                let equipType = '';
                 for(r of rows){
                     let time = String(r.sTime); //Formatting time
                     time= time.substring(time.indexOf(':') - 2, time.indexOf('G')); //Formatting time more
-                    schedule += `<tr><td> ${r.equipmentID} </td>`   //Inserting the equipment's ID in one column
-                    schedule += `<td> ${r.equipmentType} </td>` //Inserting the equipment's type in one column
                     schedule += `<td> ${time} </td>`    //Inserting the time in one column
-                    schedule += `<td> ${r.availability} </td></tr>` //Inserting the equipment's availability in one column
+                    if (r.availability == 1) {
+                        schedule += `<td>Available</td></tr>` //Inserting equipment's availability in one column
+                    }
+                    else {
+                        schedule += `<td>Not Available</td></tr>` //Inserting equipment's availability in one column
+                    }
+                    equipType = r.equipmentType
                 }
+                schedule += `Equipment Type: ` + equipType
                 schedule += `</table>`  //Ending table
                 schedule += `<form action="/">
                                 <br/><button>Return to Home Page</button>
