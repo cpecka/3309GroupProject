@@ -26,41 +26,47 @@
     <a href = "/">Click here to return to the main page</a>
 </body>
 <script>
+
+    //Function used to send a request to the server to help generate a reservation
     function checkAve(){
-        let xReq = new XMLHttpRequest();
+        let xReq = new XMLHttpRequest();    //using AJAX
         xReq.onreadystatechange = displayResponse; //what will be called when the server responds
 
         xReq.open('POST','/genReservation1',true);   //what will deal with the request
-        xReq.setRequestHeader("day", "" + document.getElementById("day").value);
-        xReq.setRequestHeader("time", "" + document.getElementById("time").value);
-        xReq.setRequestHeader("doctorID", "" + document.getElementById("doctor").value);
-        xReq.setRequestHeader("wing", "" + document.getElementById("wing").value);
-        xReq.setRequestHeader("equiType", "" + document.getElementById("equip").value);
-        xReq.setRequestHeader("priority", "" + document.getElementById("priority").value);
+        xReq.setRequestHeader("day", "" + document.getElementById("day").value);    //setting correct request header for the date
+        xReq.setRequestHeader("time", "" + document.getElementById("time").value);  //setting correct request header for the time
+        xReq.setRequestHeader("doctorID", "" + document.getElementById("doctor").value);    //setting correct request header for the doctor ID
+        xReq.setRequestHeader("wing", "" + document.getElementById("wing").value);  //setting correct request header for the wing 
+        xReq.setRequestHeader("equiType", "" + document.getElementById("equip").value); //setting correct request header for the equipment type
+        xReq.setRequestHeader("priority", "" + document.getElementById("priority").value);  //setting correct request header for the priority
         xReq.send();    //sending the request
     }
+
+    //Another function to send a request to the server
+    //Due to syncronicity issues my MYSQL, a second request function is needed for generating a reservation
     function computeResponse()
     {
-        let xReq = new XMLHttpRequest();
+        let xReq = new XMLHttpRequest();    //using AJAX
         xReq.onreadystatechange = displayResponse; //what will be called when the server responds
 
         xReq.open('POST','/genReservation2',true);   //what will deal with the request
-        xReq.setRequestHeader("day", "" + document.getElementById("day").value);
-        xReq.setRequestHeader("time", "" + document.getElementById("time").value);
-        xReq.setRequestHeader("doctorID", "" + document.getElementById("doctor").value);
-        xReq.setRequestHeader("wing", "" + document.getElementById("wing").value);
-        xReq.setRequestHeader("equiType", "" + document.getElementById("equip").value);
-        xReq.setRequestHeader("priority", "" + document.getElementById("priority").value);
+        xReq.setRequestHeader("day", "" + document.getElementById("day").value);    //setting correct request header for the date
+        xReq.setRequestHeader("time", "" + document.getElementById("time").value);  //setting correct request header for the time
+        xReq.setRequestHeader("doctorID", "" + document.getElementById("doctor").value);    //setting correct request header for the doctor ID
+        xReq.setRequestHeader("wing", "" + document.getElementById("wing").value);  //setting correct request header for the wing
+        xReq.setRequestHeader("equiType", "" + document.getElementById("equip").value); //setting correct request header for the equipment type
+        xReq.setRequestHeader("priority", "" + document.getElementById("priority").value);  //setting correct request header for the priority
         xReq.send();    //sending the request
     }
 
+    //Function used to display the generated reservation from the server
     function displayResponse()
     {
-    
+        //ready?
         if (this.readyState == 4 && this.status == 200) {
             let content = "";
-            content += this.responseText;
-            response.innerHTML = content;
+            content += this.responseText;   //displaying received message
+            response.innerHTML = content;   //div here is response
         }
 
     }

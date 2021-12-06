@@ -17,23 +17,28 @@
     <a href = "/">Click here to return to the main page</a>
 </body>
 <script>
+
+    //Function used to send a request to the server to determine the correct cost
     function computeResponse()
     {
+        //using AJAX
         let xReq = new XMLHttpRequest();
         xReq.onreadystatechange = displayResponse; //what will be called when the server responds
 
         xReq.open('POST','/calculateCost',true);   //what will deal with the request
-        xReq.setRequestHeader("roomNo", "" + document.getElementById("room").value);
-        xReq.setRequestHeader("equipmentID", "" + document.getElementById("equipment").value);
+        xReq.setRequestHeader("roomNo", "" + document.getElementById("room").value);    //setting correct reqest header for room number
+        xReq.setRequestHeader("equipmentID", "" + document.getElementById("equipment").value);  //setting correct request header for equipment ID
         xReq.send();    //sending the request
     }
 
+    //Function used to display the calculated cost from the server
     function displayResponse()
     {
+        //ready?
         if (this.readyState == 4 && this.status == 200) {
             let content = "";
-            content += this.responseText;
-            response.innerHTML = content;
+            content += this.responseText;   //displaying received message
+            response.innerHTML = content;   //div here is response
         }
     }
 

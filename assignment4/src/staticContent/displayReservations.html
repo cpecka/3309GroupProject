@@ -18,23 +18,24 @@
     </form>
 </body>
 <script>
+
+    //Function used to send a request to the server
     function getRes() {
-        let xReq = new XMLHttpRequest();
-        xReq.onreadystatechange = showRes;
+        let xReq = new XMLHttpRequest();    //using AJAX
+        xReq.onreadystatechange = showRes;  //what will be called when the server responds
 
-        xReq.open('POST', '/displayReservations', true);
-
-        xReq.setRequestHeader("resDate","" + document.getElementById("date").value)
-        console.log("resDate","" + document.getElementById("date").value)
-        console.log('test2');
-        xReq.send();
+        xReq.open('POST', '/displayReservations', true);    //what will deal with the request
+        xReq.setRequestHeader("resDate","" + document.getElementById("date").value) //setting correct request header for the date
+        xReq.send();    //sending the request
     }
 
+    //Function used to display the reservations from the server
     function showRes() {
+        //ready?
         if (this.readyState == 4 && this.status == 200) {
             let content = "";
-            content += this.responseText;
-            response.innerHTML = content;
+            content += this.responseText;   //displaying received message
+            response.innerHTML = content;   //div here is response
         }
     }
 </script>

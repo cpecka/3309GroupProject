@@ -32,26 +32,28 @@
       <a href = "/">Click here to return to the main page</a>
 </body>
 <script>
+
+    //Function used to send a request to the server to insert a patient
     function getPatient() {
-        let xReq = new XMLHttpRequest();
+        let xReq = new XMLHttpRequest();    //using AJAX
         xReq.onreadystatechange = displayPatient; //what will be called when the server responds
 
         xReq.open('POST','/insertPatient',true);   //what will deal with the request
-
-        xReq.setRequestHeader("pFirstName", "" + document.getElementById("fName").value);
-        xReq.setRequestHeader("pLastName", "" + document.getElementById("lName").value);
-        xReq.setRequestHeader("healthCardNo", "" + document.getElementById("hCardNo").value);
-        xReq.setRequestHeader("DOB", "" + document.getElementById("dob").value);
-        xReq.setRequestHeader("sex", "" + document.getElementById("sex").value);
-
+        xReq.setRequestHeader("pFirstName", "" + document.getElementById("fName").value);   //setting the correct request header for the patient's first name
+        xReq.setRequestHeader("pLastName", "" + document.getElementById("lName").value);    //setting the correct request header for the patient's last name
+        xReq.setRequestHeader("healthCardNo", "" + document.getElementById("hCardNo").value);   //setting the correct request header for the patient's health card number
+        xReq.setRequestHeader("DOB", "" + document.getElementById("dob").value);    //setting the correct request header for the patient's date of birth
+        xReq.setRequestHeader("sex", "" + document.getElementById("sex").value);    //setting the correct request header for the patient's sex
         xReq.send();    //sending the request
     }
+
+    //Function used to display the details of the inserted patient
     function displayPatient() {
+        //ready
         if (this.readyState == 4 && this.status == 200) {
             let content = "";
-
-            content += this.responseText;
-            response.innerHTML = content;
+            content += this.responseText;   //displaying recieved message
+            response.innerHTML = content;   //div here is response
         }
     }
 </script>
