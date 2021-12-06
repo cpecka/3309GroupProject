@@ -1,5 +1,5 @@
 /*
-Values to input for non trival output
+Values to input for non trival output in generate reservation functionality
 
 	December 13, 2021 6:00am
 	Doctor 17
