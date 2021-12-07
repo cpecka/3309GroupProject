@@ -22,7 +22,7 @@ function newConnection() {
 const db = mysql.createConnection ({
     host: 'localhost', 
     user: 'root',  
-    password: 'root', 
+    password: 'root',   //this will need to be changed depending on who is using the DB
     database: 'hospitalAdmin'
 });
 return db;
@@ -466,7 +466,8 @@ app.post('/insertPatient', (req, res) => {
             content += 'Name: ' + req.get("pFirstName") + ' ' + req.get("pLastName") + '<br>'
             content += 'Health Card Number: ' + req.get("healthCardNo") + '<br>'
             content += 'Date of Birth (YYYY/MM/DD): ' + year + '/' + month + '/' + day + '<br>'
-            content += 'Sex: ' + req.get("sex")
+            content += 'Sex: ' + req.get("sex") + '<br>'
+            content += 'Doctor ID: ' + req.get("doctorID")
             content += '</div>';
 
             res.send(content);  //Sending patient information to client
