@@ -7,6 +7,11 @@ const path = require('path');   //Requiring path
 let rRoomNo;    //holds a room number (for generating reservations)
 let rEID;   //holds an equipment ID (for generating reservations)
 let resDateTime ="";    //holds the datetime of a reservation (for generating reservations)
+let check1 = true;  //for checking doctor availability of generating reservations
+let check2 = true;  //for checking room availability of generating reservations
+let check3 = true;  //for checking equipment availability of generating reservations
+let availabilityChecked=false;  //for making sure availability button has been checked
+let range = true;   //for some form of illegal input in generating reservations (ie: a date not in the schedule)
 
 const app = express();  //allow us to use express by referencing it in an app variable
 
@@ -36,6 +41,13 @@ app.get('/GenerateReservation', (req,res) => {
 //this stage verifies the values that the user would like to use for their new reservation
 //and informs them of any errors in their input
 app.post('/genReservation1', (req, res) => {
+    //resetting booleans
+    check1=true;
+    check2=true;
+    check3=true;
+    availabilityChecked=true;
+    range=true;
+
     //establishing connection
     let conn = newConnection();
     conn.connect();
@@ -57,16 +69,14 @@ app.post('/genReservation1', (req, res) => {
     conn.query(`SELECT availability From StaffSchedule \n`+
                 `Where (doctorID = ${req.get("doctorID")} AND sTime = '${resDateTime}')`//Checks if the doctor is available for the time requested by the user
         ,(err,rows,fields) => {
-            if(err) {
+            if(err || rows == 0) {
                 console.log(err);
+                range=false;    //input was out of range
             }
             else {
-                if(rows==null){//if the return is empty informs the user the doctor is unavailable
+                if(rows[0].availability=='0' || rows[0].availability==null){//if the return is false or empty informs the user the doctor is unavailable
                     res.send("Sorry! doctor "+req.get("doctorID")+" is unavailable at your chosen time.");
-                    return;
-                }
-                if(rows[0].availability=='0'){//if the return is false informs the user the doctor is unavailable
-                    res.send("Sorry! doctor "+req.get("doctorID")+" is unavailable at your chosen time.");
+                    check1=false;
                     return;
                 }
             }
@@ -76,12 +86,14 @@ app.post('/genReservation1', (req, res) => {
                 `Where (SELECT r.roomNo FROM ROOM r \n`+
                 `Where (rs.sTime = '${resDateTime}' AND rs.availability = true AND r.hospitalWing = '${req.get("wing")}' AND r.roomNo = rs.roomNo))`
         ,(err,rows,fields) => {
-            if(err) {
+            if(err || rows==0) {
                 console.log(err);
+                range=false;    //input was out of range
             }
             else {
                 if (rows.length == 0) {//if there are no rooms availabel during the selected time
                     res.send("Sorry! every room in wing " + req.get("wing") + " is unavailable at your chosen time.");
+                    check2=false;
                     return;
                 }
                 setRoomNo(rows[0].roomNo); //sets room number for the second stage of generate reservation
@@ -92,17 +104,22 @@ app.post('/genReservation1', (req, res) => {
         `Where (Select me.equipmentID from MedicalEquipment me \n` +
         `Where (es.sTime = '${resDateTime}' AND es.availability = true AND me.equipmentType = '${req.get("equiType")}' AND me.equipmentID = es.equipmentID))`
         , (err, rows, fields) => {
-            if (err) {
+            if (err||rows==0) {
                 console.log(err);
+                range=false;    //input was out of range
             }
             else {
                 if (rows.length == 0) {//if there is no equipment of that type or none availble at the chosen time
                     if (req.get("equiType") == "Forceps") {// removes the s in the return for forceps (since it is plural by default)
                         res.send("Sorry! There are no " + req.get("equiType") + " available at your chosen time.");
+                        check3=false;
                         return;
                     }
+                    else {
                     res.send("Sorry! There are no " + req.get("equiType") + "s available at your chosen time.");
+                    check3=false;
                     return;
+                    }
                 }
                 setEquipmentID(rows[0].equipmentID);//sets equipment ID for the second stage of generate reservation
             }
@@ -112,7 +129,11 @@ app.post('/genReservation1', (req, res) => {
 //Stage 2 of generate reservation
 //this stage sets the availabilities of the entities chosen in stage one to false for the time the user selcted
 //and inserts the new reservation into the DB
-app.post('/genReservation2', (req, res) => { 
+app.post('/genReservation2', (req, res) => {
+    if (check1 == false || check2==false || check3==false || availabilityChecked==false || range==false){  //Stops a reservation from being made if an availability is false, availability hasn't been checked, or if an illegal value was entered
+        res.send("One of your values is not acceptable, or you have not checked availability yet")
+    }
+    else {
     let conn = newConnection();
     conn.connect();
     conn.query(`Update StaffSchedule \n` +
@@ -151,6 +172,8 @@ app.post('/genReservation2', (req, res) => {
             }
         });
     conn.end();
+    availabilityChecked=false;  //reset for next reservation if wanted
+    }
 })
 
 //Get method which opens up the page for searching the various schedules
