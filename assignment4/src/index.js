@@ -171,12 +171,12 @@ app.post('/SearchSResults', (req, res) => {
     let date = String(req.body.sDate)   //Formatting the user entered date
     date = date.substring(0,date.indexOf('-')) + date.substring(date.indexOf('-') + 1, date.indexOf('-' ,date.indexOf('-') + 1)) + date.substring(date.indexOf('-' ,date.indexOf('-') + 1) + 1);    //Formatting the date more
 
-    //For room schedules
+    //Query to retrieve the roomschedule ordered by avaliability filtered by the values of date and roomNo posted with the request 
     if(req.body.scheduleType == 'Room Schedule'){
         conn.query(`SELECT * FROM roomschedule 
                     WHERE Date(sTime) = ${date} 
                     AND roomNo = ${req.body.sId} 
-                    ORDER BY availability;` //Query
+                    ORDER BY availability;` 
             ,(err,rows,fields) =>{
 
                 schedule += `<table style="width:100%">`    //Formatting table
@@ -200,7 +200,7 @@ app.post('/SearchSResults', (req, res) => {
         })
     }
 
-    //For staff schedules
+    //Query to retrieve the joined dataset staffschedule and Doctor ordered by avaliability filtered by the values of date and doctorID posted with the request 
     else if(req.body.scheduleType == 'Doctor Schedule'){
         conn.query(`SELECT * FROM 
                 (SELECT * FROM Doctor NATURAL JOIN staffschedule) AS doctorSchedule
@@ -237,7 +237,7 @@ app.post('/SearchSResults', (req, res) => {
         })
     }
 
-    //For equipment schedules
+    //Query to retrieve the joined dataset equipmentschedule and medicalequipment ordered by avaliability filtered by the values of date and equipmentID posted with the request
     else{
         conn.query(`SELECT * FROM
                     (SELECT equipmentID, equipmentType, sTime, availability FROM medicalequipment NATURAL JOIN equipmentschedule) AS eSchedule
